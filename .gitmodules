@@ -1,0 +1,3 @@
+[submodule "contrib/dexcap-sdk-cpp"]
+	path = contrib/dexcap-sdk-cpp
+	url = git@github.com:DexRobot/dexcap-sdk-cpp.git
