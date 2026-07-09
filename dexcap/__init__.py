@@ -1,6 +1,6 @@
 __version__ = "V1.0.0"
 
-from .dexcap import (
+from .typedefs import (
     AdapterType,
     DeviceType,
     DexReturn,
@@ -9,10 +9,19 @@ from .dexcap import (
     DexCapJointData,
     DexCapEndPoses,
     MainBatteryState,
+)
+
+from .utils import (
+    WiredDeviceEnumerator,
+)
+
+from .dexcap import (
     DexCapSuit,
 )
 
 __all__ = [
+    'typedefs',
+    'WiredDeviceEnumerator',
     'AdapterType',
     'DeviceType',
     'DexReturn',
@@ -21,6 +30,7 @@ __all__ = [
     'DexCapJointData',
     'DexCapEndPoses',
     'MainBatteryState',
+    'dexcap',
     'DexCapSuit',
     '__version__',
 ]
