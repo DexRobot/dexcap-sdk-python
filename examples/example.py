@@ -48,6 +48,9 @@ def main():
             print('')
 
         if (data.mask & 0x4000) != 0:
+            err_code, err_info = dexcap_suit.get_device_diagnostics(DeviceType.UpBody)
+            if err_code != 0:
+                print('[ERROR]-[UpBody]: Error Code={}, Error Info=\'{}\''.format(err_code, err_info))
             print('[Exo UpBody]: ', end=' ')
             for idx in range(23):
                 print('jnt{}={}, '.format(idx, data.ExBody[idx]), end='')

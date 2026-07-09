@@ -172,8 +172,7 @@ class DexCapSuit:
 
     def get_l_battery_state(self) -> int:
         level = ctypes.c_uint16(0)
-        level_ptr = ctypes.POINTER(level)
-        return_code = DexReturn(LibDexCapSuit.dexcap_get_l_battery_state(self.instance, level_ptr))
+        return_code = DexReturn(LibDexCapSuit.dexcap_get_l_battery_state(self.instance, byref(level)))
         if return_code is DexReturn.DEX_SUCCESS:
             return int(level)
 
@@ -181,8 +180,7 @@ class DexCapSuit:
 
     def get_r_battery_state(self) -> int:
         level = ctypes.c_uint16(0)
-        level_ptr = ctypes.POINTER(level)
-        return_code = DexReturn(LibDexCapSuit.dexcap_get_r_battery_state(self.instance, level_ptr))
+        return_code = DexReturn(LibDexCapSuit.dexcap_get_r_battery_state(self.instance, byref(level)))
         if return_code is DexReturn.DEX_SUCCESS:
             return int(level)
 
@@ -200,13 +198,26 @@ class DexCapSuit:
     def get_diagnostics(self) -> (int, str):
         err_code = ctypes.c_int(0)
         err_info = str()
-        err_code_p = ctypes.POINTER(err_code)
         err_info_p = ctypes.c_char_p(err_info.encode('utf-8'))
-        err_info_len_p = ctypes.POINTER(ctypes.c_uint64(128))
+        err_info_len = ctypes.c_uint64(128)
         LibDexCapSuit.dexcap_get_diagnostics(self.instance,
-                                             err_code_p,
+                                             byref(err_code),
                                              err_info_p,
                                              128,
-                                             err_info_len_p)
+                                             byref(err_info_len))
 
-        return err_code, err_info
+        return err_code.value, err_info
+
+    def get_device_diagnostics(self, device: DeviceType) -> (int, str):
+        err_code = ctypes.c_int(0)
+        err_info = str()
+        err_info_p = ctypes.c_char_p(err_info.encode('utf-8'))
+        err_info_len = ctypes.c_uint64(128)
+        LibDexCapSuit.dexcap_get_device_diagnostics(self.instance,
+                                                    device,
+                                                    byref(err_code),
+                                                    err_info_p,
+                                                    128,
+                                                    byref(err_info_len))
+
+        return err_code.value, err_info
