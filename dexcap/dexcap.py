@@ -11,7 +11,7 @@ class DexCapSuit:
         LibDexCapSuit.dexcap_create_suit_instance.argtypes = [ctypes.POINTER(DEXCAP_SUIT_HANDLE)]
         LibDexCapSuit.dexcap_create_suit_instance.restype = c_int
 
-        LibDexCapSuit.dexcap_connect_suit_device.argtypes = [c_void_p, c_char_p, DeviceType_c_ptr, AdapterType_c]
+        LibDexCapSuit.dexcap_connect_suit_device.argtypes = [c_void_p, c_char_p, DeviceType_c_ptr, AdapterType_c, c_bool]
         LibDexCapSuit.dexcap_connect_suit_device.restype = c_int
 
         LibDexCapSuit.dexcap_is_device_connected.argtypes = [c_void_p, DeviceType_c]
@@ -47,7 +47,7 @@ class DexCapSuit:
         LibDexCapSuit.dexcap_get_ex_body_data.argtypes = [c_void_p, BDY_DATA_PTR]
         LibDexCapSuit.dexcap_get_ex_body_data.restype = c_int
 
-        LibDexCapSuit.dexcap_get_joint_data.argtypes = [c_void_p,DEX_DATA_PTR]
+        LibDexCapSuit.dexcap_get_joint_data.argtypes = [c_void_p, DEX_DATA_PTR]
         LibDexCapSuit.dexcap_get_joint_data.restype = c_int
 
         LibDexCapSuit.dexcap_get_arm_end_poses.argtypes = [c_void_p, POS_DATA_PTR]
@@ -61,6 +61,18 @@ class DexCapSuit:
 
         LibDexCapSuit.dexcap_get_main_battery_state.argtypes = [c_void_p, BAT_DATA_PTR]
         LibDexCapSuit.dexcap_get_main_battery_state.restype = c_int
+
+        LibDexCapSuit.dexcap_charge_l_glove.argtypes = [c_void_p, c_bool]
+        LibDexCapSuit.dexcap_charge_l_glove.restype  = c_int
+
+        LibDexCapSuit.dexcap_charge_r_glove.argtypes = [c_void_p, c_bool]
+        LibDexCapSuit.dexcap_charge_l_glove.restype  = c_int
+
+        LibDexCapSuit.dexcap_vibrate_l_motors.argtypes = [c_void_p, HandVibData]
+        LibDexCapSuit.dexcap_vibrate_l_motors.restype  = c_int
+
+        LibDexCapSuit.dexcap_vibrate_r_motors.argtypes = [c_void_p, HandVibData]
+        LibDexCapSuit.dexcap_vibrate_r_motors.restype  = c_int
 
         LibDexCapSuit.dexcap_get_diagnostics.argtypes = [c_void_p, POINTER(c_int), c_char_p, c_uint64, POINTER(c_uint64)]
         LibDexCapSuit.dexcap_get_diagnostics.restype = c_int
@@ -80,14 +92,14 @@ class DexCapSuit:
     def get_adapter_type(self):
         return self.adapter_type
 
-    def connect_device(self, adapter_name: str, adapter_type: AdapterType) -> DeviceType:
+    def connect_device(self, adapter_name: str, adapter_type: AdapterType, force_glove_charge=False) -> DeviceType:
         device_type  = DeviceType_c(DeviceType.UnDefn.value)
         adapter_type = AdapterType_c(adapter_type.value)
         adapter_name_b = adapter_name.encode('utf-8')
         return_code = DexReturn(LibDexCapSuit.dexcap_connect_suit_device(self.instance,
                                                                ctypes.c_char_p(adapter_name_b),
                                                                ctypes.byref(device_type),
-                                                               adapter_type))
+                                                               adapter_type, force_glove_charge))
 
         if return_code is DexReturn.DEX_SUCCESS:
             if device_type is not DeviceType.UnDefn and device_type is not DeviceType.WRecvr:
@@ -194,6 +206,32 @@ class DexCapSuit:
             return True, data
 
         return False, data
+
+    def charge_l_glove(self, charge_on) -> int:
+        return_code = DexReturn(LibDexCapSuit.dexcap_charge_l_glove(self.instance, charge_on))
+        return return_code
+
+    def charge_r_glove(self, charge_on) -> int:
+        return_code = DexReturn(LibDexCapSuit.dexcap_charge_r_glove(self.instance, charge_on))
+        return return_code
+
+    def vibrate_l_motors(self, vib_data) -> int:
+        if len(vib_data) == 0:
+            return DexReturn.DEX_INVALID_DATA_FMT
+
+        data = HandVibData(*vib_data)
+        return_code = DexReturn(LibDexCapSuit.dexcap_vibrate_l_motors(self.instance, data))
+        return return_code
+
+    def vibrate_r_motors(self, vib_data) -> int:
+        if len(vib_data) == 0:
+            return DexReturn.DEX_INVALID_DATA_FMT
+
+        data = HandVibData
+        for i in range(5):
+            data[i] = vib_data[i]
+        return_code = DexReturn(LibDexCapSuit.dexcap_vibrate_r_motors(self.instance, data))
+        return return_code
 
     def get_diagnostics(self) -> (int, str):
         err_code = ctypes.c_int(0)

@@ -64,6 +64,8 @@ def main():
 
         print('=============================================')
 
+        # vib_data = [100, 100, 0, 0, 0]
+        # dexcap_suit.vibrate_l_motors(vib_data)
         duration = time.time() - start_ts
         timeout = duration >= 30
         sleep(0.1)

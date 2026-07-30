@@ -45,6 +45,7 @@ class DexReturn(IntEnum):
 DexCapDeviceData = ctypes.c_uint16 * 24
 EndPoseData = ctypes.c_double * 4 * 4
 IMUPoseData = ctypes.c_float * 17
+HandVibData = ctypes.c_uint8 * 10
 
 
 class GloveJointAngles(ctypes.Structure):
