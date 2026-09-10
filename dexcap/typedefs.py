@@ -1,11 +1,12 @@
 import sys
 import ctypes
+import platform
 from enum import IntEnum
 
 if sys.platform.startswith('win'):
     LibDexCapSuit = ctypes.cdll.LoadLibrary("../contrib/dexcap-sdk-cpp/libs/windows/DexCap.dll")
 else:
-    LibDexCapSuit = ctypes.cdll.LoadLibrary("../contrib/dexcap-sdk-cpp/libs/linux/libDexCap.so")
+    LibDexCapSuit = ctypes.cdll.LoadLibrary(f"../contrib/dexcap-sdk-cpp/libs/linux/{platform.machine()}/libDexCap.so")
 
 class AdapterType(IntEnum):
     """Supported connection adapters"""
