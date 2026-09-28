@@ -1,11 +1,12 @@
 import sys
 import ctypes
+import platform
 from enum import IntEnum
 
 if sys.platform.startswith('win'):
     LibDexCapSuit = ctypes.cdll.LoadLibrary("../contrib/dexcap-sdk-cpp/libs/windows/DexCap.dll")
 else:
-    LibDexCapSuit = ctypes.cdll.LoadLibrary("../contrib/dexcap-sdk-cpp/libs/linux/libDexCap.so")
+    LibDexCapSuit = ctypes.cdll.LoadLibrary(f"../contrib/dexcap-sdk-cpp/libs/linux/{platform.machine()}/libDexCap.so")
 
 class AdapterType(IntEnum):
     """Supported connection adapters"""
@@ -45,7 +46,7 @@ class DexReturn(IntEnum):
 DexCapDeviceData = ctypes.c_uint16 * 24
 EndPoseData = ctypes.c_double * 4 * 4
 IMUPoseData = ctypes.c_float * 17
-HandVibData = ctypes.c_uint8 * 10
+HandVibData = ctypes.c_uint8 * 5
 
 
 class GloveJointAngles(ctypes.Structure):

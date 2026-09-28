@@ -186,7 +186,7 @@ class DexCapSuit:
         level = ctypes.c_uint16(0)
         return_code = DexReturn(LibDexCapSuit.dexcap_get_l_battery_state(self.instance, byref(level)))
         if return_code is DexReturn.DEX_SUCCESS:
-            return int(level)
+            return level.value
 
         return -1
 
@@ -194,7 +194,7 @@ class DexCapSuit:
         level = ctypes.c_uint16(0)
         return_code = DexReturn(LibDexCapSuit.dexcap_get_r_battery_state(self.instance, byref(level)))
         if return_code is DexReturn.DEX_SUCCESS:
-            return int(level)
+            return level.value
 
         return -1
 
@@ -227,9 +227,7 @@ class DexCapSuit:
         if len(vib_data) == 0:
             return DexReturn.DEX_INVALID_DATA_FMT
 
-        data = HandVibData
-        for i in range(5):
-            data[i] = vib_data[i]
+        data = HandVibData(*vib_data)
         return_code = DexReturn(LibDexCapSuit.dexcap_vibrate_r_motors(self.instance, data))
         return return_code
 
